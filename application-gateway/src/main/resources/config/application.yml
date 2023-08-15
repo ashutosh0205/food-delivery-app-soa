@@ -1,0 +1,67 @@
+
+# For Spring Actuator /info endpoint
+info:
+  artifact: spring-edge
+  name: spring-edge
+  description: Spring Boot Edge Service Example using Spring Cloud Gateway
+  version: 1.0.0
+
+#management:
+#  security:
+#    enabled: false
+#  health:
+#    consul:
+#      enabled: false   # must be false to pass /health check
+
+#Exposes Spring actuator endpoints
+management:
+  health:
+    diskspace:
+      enabled: false
+    db:
+      enabled: false
+    defaults:
+      enabled: false
+    details:
+      enabled: false
+    application:
+      enabled: true
+  endpoint:
+    health:
+      show-details: always
+  endpoints:
+    web:
+      base-path: /
+      expose: "*"
+
+
+spring:
+  cloud:
+    gateway:
+      routes:
+        - id: restaurant
+          uri: http://localhost:8001
+          predicates:
+            - Path=/restaurants/**
+          filters:
+            - PrefixPath=/api
+            - AddRequestTimeHeaderPreFilter
+            - AddResponseTimeHeaderPostFilter
+        - id: order
+          uri: http://localhost:8002
+          predicates:
+            - Path=/orders/**
+          filters:
+            - PrefixPath=/api
+            - AddRequestTimeHeaderPreFilter
+            - AddResponseTimeHeaderPostFilter
+
+
+#logging:
+#  level:
+#    org.springframework: DEBUG
+
+server:
+  port: 9080
+
+
